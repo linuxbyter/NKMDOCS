@@ -1,6 +1,6 @@
-# NKM Documents
+# LegalDocsKE
 
-Advocate-drafted legal documents, customized to your answers. Ready in minutes.
+Professional legal document templates, customized to your answers. Ready in minutes.
 
 ## Tech Stack
 
@@ -8,10 +8,9 @@ Advocate-drafted legal documents, customized to your answers. Ready in minutes.
 - **Styling:** Tailwind CSS v4
 - **Forms:** React Hook Form + Zod validation
 - **Hosting:** Vercel
-- **Database:** Supabase (Postgres)
+- **Database:** Neon (Postgres)
 - **Payments:** M-Pesa Daraja API (STK Push)
-- **Template Engine:** docxtemplater (Word) / Carbone (PDF)
-- **Email:** Resend / Brevo
+- **Email:** Resend
 
 ## Getting Started
 
@@ -75,4 +74,4 @@ src/
 
 ## Legal Disclaimer
 
-This platform provides pre-drafted legal templates, not legal advice. All templates are advocate-drafted and pre-approved. The guided Q&A customizes defined fields only — no novel legal text is generated per order.
+This platform provides pre-drafted legal templates, not legal advice. All templates are pre-approved. The guided Q&A customizes defined fields only — no novel legal text is generated per order.

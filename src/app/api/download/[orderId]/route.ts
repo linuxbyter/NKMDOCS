@@ -45,7 +45,7 @@ export async function GET(
 
     // Placeholder: generate a simple text file as demo
     const content = `
-NKM DOCUMENTS - GENERATED DOCUMENT
+LEGALDOCSKE - GENERATED DOCUMENT
 ===================================
 
 Document: ${order.document_name}

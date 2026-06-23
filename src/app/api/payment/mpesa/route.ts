@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createOrder, updateOrderStatus } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/email";
 import { getDocumentBySlug } from "@/data/documents";
+import { generateOrderId } from "@/lib/utils";
 
 // M-Pesa Daraja API Configuration
 const MPESA_CONFIG = {
@@ -47,12 +48,6 @@ function getTimestamp(): string {
 function generatePassword(timestamp: string): string {
   const data = `${MPESA_CONFIG.shortCode}${MPESA_CONFIG.passkey}${timestamp}`;
   return Buffer.from(data).toString("base64");
-}
-
-function generateOrderId(): string {
-  const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `NKM-${timestamp}-${random}`;
 }
 
 export async function POST(request: NextRequest) {

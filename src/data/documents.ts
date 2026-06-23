@@ -731,7 +731,7 @@ export const documents: DocumentTemplate[] = [
         type: "text",
         label: "Lawyer's name and firm",
         required: false,
-        placeholder: "e.g. Wakili Agnes, NKM Advocates",
+        placeholder: "e.g. Wakili Agnes, Law Firm",
         conditionalOn: { questionId: "has_lawyer", value: true },
         group: "Legal Representative",
       },

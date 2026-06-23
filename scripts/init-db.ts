@@ -52,12 +52,12 @@ async function main() {
   // Test insert
   console.log("\nTesting insert...");
   const result = await sql`INSERT INTO orders (id, document_slug, document_name, answers, customer_name, customer_email, amount, review_requested, status)
-    VALUES ('NKM-TEST-001', 'test', 'Test Document', '{}', 'Test User', 'test@test.com', 1000, false, 'test')
+    VALUES ('LGL-TEST-001', 'test', 'Test Document', '{}', 'Test User', 'test@test.com', 1000, false, 'test')
     RETURNING id`;
   console.log("✓ Test insert successful:", result[0].id);
 
   // Clean up test
-  await sql`DELETE FROM orders WHERE id = 'NKM-TEST-001'`;
+  await sql`DELETE FROM orders WHERE id = 'LGL-TEST-001'`;
   console.log("✓ Test data cleaned up");
 
   console.log("\n✅ Database initialized successfully!");

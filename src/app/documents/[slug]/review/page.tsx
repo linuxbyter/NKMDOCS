@@ -12,7 +12,7 @@ export async function generateMetadata({
   const doc = getDocumentBySlug(slug);
   if (!doc) return {};
   return {
-    title: `Customize ${doc.name} | NKM Documents`,
+    title: `Customize ${doc.name} | LegalDocsKE`,
     description: `Answer guided questions to customize your ${doc.name}. Takes about ${doc.estimatedTime}.`,
   };
 }

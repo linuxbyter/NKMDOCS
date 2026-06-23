@@ -1,12 +1,25 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SITE_NAME, SITE_DESCRIPTION, SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "NKM Documents | Advocate-Drafted Legal Documents",
-  description:
-    "Customize advocate-drafted legal documents in minutes. Answer simple questions, get a professionally formatted document ready to sign.",
+  title: {
+    template: `%s | ${SITE_NAME}`,
+    default: `${SITE_NAME} - Professional Legal Document Templates`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "en_KE",
+    type: "website",
+  },
+  metadataBase: new URL(SITE_URL),
 };
 
 export default function RootLayout({
@@ -15,8 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
+    <html lang="en">
+      <body className="antialiased flex flex-col min-h-screen">
+        <Toaster richColors position="top-center" />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

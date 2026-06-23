@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
   CheckCircle2, Mail, Download, FileText, ArrowRight,
-  Clock, Shield, Phone,
+  Clock, Shield,
 } from "lucide-react";
 
 interface OrderDetails {
@@ -23,7 +23,7 @@ export default function SuccessPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("nkm-order");
+    const stored = sessionStorage.getItem("ldk-order");
     if (stored) {
       setOrder(JSON.parse(stored));
     }
@@ -38,12 +38,10 @@ export default function SuccessPage() {
             <CheckCircle2 className="h-10 w-10 text-brand-success" />
           </div>
           <h1 className="text-3xl font-bold text-brand-navy">
-            {order?.reviewRequested ? "Order Confirmed!" : "Payment Received!"}
+            Payment Received!
           </h1>
           <p className="text-brand-muted mt-2 max-w-md mx-auto">
-            {order?.reviewRequested
-              ? "Your order has been received and will be reviewed by an advocate shortly."
-              : "Your document is being generated and will be emailed to you shortly."}
+            Your document is being generated and will be emailed to you shortly.
           </p>
         </div>
 
@@ -70,7 +68,7 @@ export default function SuccessPage() {
                 <div className="flex justify-between">
                   <span className="text-brand-muted">Payment Method</span>
                   <span className="font-medium text-brand-navy capitalize">
-                    {order.paymentMethod === "mpesa" ? "M-Pesa" : "Bank Transfer"}
+                    M-Pesa
                   </span>
                 </div>
               </>
@@ -82,102 +80,40 @@ export default function SuccessPage() {
         <div className="rounded-xl border border-brand-border bg-white p-6 mb-6">
           <h2 className="font-semibold text-brand-navy mb-4">What Happens Next</h2>
 
-          {order?.reviewRequested ? (
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white text-sm font-bold shrink-0">
-                  1
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Advocate Review</p>
-                  <p className="text-xs text-brand-muted">
-                    An advocate will review your document within 1-2 business days
-                  </p>
-                </div>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-success text-white shrink-0">
+                <CheckCircle2 className="h-4 w-4" />
               </div>
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white text-sm font-bold shrink-0">
-                  2
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Email Delivery</p>
-                  <p className="text-xs text-brand-muted">
-                    Once approved, your document will be sent to {order.customerEmail || "your email"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white text-sm font-bold shrink-0">
-                  3
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Download & Sign</p>
-                  <p className="text-xs text-brand-muted">
-                    Download, print, and sign your document
-                  </p>
-                </div>
+              <div>
+                <p className="text-sm font-medium text-brand-navy">Document Generated</p>
+                <p className="text-xs text-brand-muted">
+                  Your customized document has been created
+                </p>
               </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-success text-white shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Document Generated</p>
-                  <p className="text-xs text-brand-muted">
-                    Your customized document has been created
-                  </p>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white shrink-0">
+                <Mail className="h-4 w-4" />
               </div>
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white shrink-0">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Email Sent</p>
-                  <p className="text-xs text-brand-muted">
-                    Check your email at {order?.customerEmail || "your inbox"} for the download link
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white shrink-0">
-                  <Download className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-brand-navy">Download & Sign</p>
-                  <p className="text-xs text-brand-muted">
-                    Download, print, and sign your document. The link expires in 24 hours.
-                  </p>
-                </div>
+              <div>
+                <p className="text-sm font-medium text-brand-navy">Email Sent</p>
+                <p className="text-xs text-brand-muted">
+                  Check your email at {order?.customerEmail || "your inbox"} for the download link
+                </p>
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Contact */}
-        <div className="rounded-xl bg-brand-navy text-white p-6 mb-6">
-          <h3 className="font-semibold mb-2">Need Help?</h3>
-          <p className="text-sm text-slate-300 mb-4">
-            Contact us if you have any questions about your order.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href="tel:0707329013"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-medium hover:bg-white/20 transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              0707 329 013
-            </a>
-            <a
-              href="mailto:contact@nkm-advocates.co.ke"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2.5 text-sm font-medium hover:bg-white/20 transition-colors"
-            >
-              <Mail className="h-4 w-4" />
-              Email Us
-            </a>
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-navy text-white shrink-0">
+                <Download className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-brand-navy">Download & Sign</p>
+                <p className="text-xs text-brand-muted">
+                  Download, print, and sign your document. The link expires in 24 hours.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -201,8 +137,7 @@ export default function SuccessPage() {
         <div className="mt-8 rounded-lg bg-brand-gold/10 border border-brand-gold/20 p-4">
           <p className="text-xs text-brand-navy flex items-start gap-2">
             <Shield className="h-4 w-4 text-brand-gold shrink-0 mt-0.5" />
-            This is a template document, not legal advice. For complex matters, please book a
-            consultation with one of our advocates.
+            This is a template document, not legal advice. For complex matters, please consult a qualified legal professional.
           </p>
         </div>
       </div>

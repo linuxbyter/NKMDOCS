@@ -13,7 +13,7 @@ function getResend() {
   return _resend;
 }
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "NKM Documents <noreply@documents.nkm-advocates.co.ke>";
+const FROM_EMAIL = process.env.EMAIL_FROM || "LegalDocsKE <noreply@legaldocske.vercel.app>";
 
 interface SendOrderEmailParams {
   to: string;
@@ -70,7 +70,7 @@ function readyForDownloadHtml({
       <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
           <div style="display: inline-block; background: #0f172a; color: #d4a843; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 18px;">
-            NKM Documents
+            LegalDocsKE
           </div>
         </div>
 
@@ -100,14 +100,12 @@ function readyForDownloadHtml({
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
 
           <p style="color: #64748b; font-size: 13px; line-height: 1.6;">
-            This is a template document, not legal advice. For complex matters, please
-            <a href="https://nkm-advocates.co.ke/contact-us/" style="color: #0f172a;">book a consultation</a>
-            with one of our advocates.
+            This is a template document, not legal advice. For complex matters, please consult a qualified legal professional.
           </p>
         </div>
 
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 24px;">
-          NKM Advocates | Wilkem Edge Business Center, Matasia | 0707 329 013
+          LegalDocsKE
         </p>
       </div>
     </body>
@@ -135,7 +133,7 @@ function reviewRequestedHtml({
       <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
           <div style="display: inline-block; background: #0f172a; color: #d4a843; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 18px;">
-            NKM Documents
+            LegalDocsKE
           </div>
         </div>
 
@@ -164,14 +162,12 @@ function reviewRequestedHtml({
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
 
           <p style="color: #64748b; font-size: 13px; line-height: 1.6;">
-            Questions? Contact us at
-            <a href="mailto:contact@nkm-advocates.co.ke" style="color: #0f172a;">contact@nkm-advocates.co.ke</a>
-            or call <a href="tel:0707329013" style="color: #0f172a;">0707 329 013</a>.
+            Questions? Reply to this email for support.
           </p>
         </div>
 
         <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 24px;">
-          NKM Advocates | Wilkem Edge Business Center, Matasia | 0707 329 013
+          LegalDocsKE
         </p>
       </div>
     </body>

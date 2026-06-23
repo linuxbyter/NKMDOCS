@@ -25,7 +25,7 @@ export async function generateMetadata({
   const doc = getDocumentBySlug(slug);
   if (!doc) return {};
   return {
-    title: `${doc.name} | NKM Documents`,
+    title: `${doc.name} | LegalDocsKE`,
     description: doc.shortDescription,
   };
 }
@@ -90,17 +90,9 @@ export default async function DocumentPage({
             {/* Price Card */}
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6">
               <div className="text-center">
-                <div className="text-sm text-slate-400 mb-1">Document Only</div>
+                <div className="text-sm text-slate-400 mb-1">Standard Template</div>
                 <div className="text-3xl font-bold text-brand-gold">{formatKES(doc.price)}</div>
                 <div className="text-xs text-slate-400 mt-1">Instant delivery</div>
-              </div>
-
-              <div className="my-4 border-t border-white/10" />
-
-              <div className="text-center">
-                <div className="text-sm text-slate-400 mb-1">With Advocate Review</div>
-                <div className="text-2xl font-bold">{formatKES(doc.reviewPrice)}</div>
-                <div className="text-xs text-slate-400 mt-1">Reviewed before release</div>
               </div>
 
               <Link
@@ -250,16 +242,8 @@ export default async function DocumentPage({
               <div className="rounded-xl bg-brand-navy text-white p-6">
                 <h3 className="font-semibold mb-2">Need More Help?</h3>
                 <p className="text-sm text-slate-300 mb-4">
-                  For complex matters, book a consultation with one of our advocates.
+                  For complex matters, consider consulting a qualified legal professional.
                 </p>
-                <a
-                  href="https://nkm-advocates.co.ke/contact-us/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full rounded-lg bg-brand-gold text-center py-2.5 text-sm font-semibold text-brand-navy hover:bg-brand-gold-light transition-colors"
-                >
-                  Book Consultation
-                </a>
               </div>
             </div>
           </div>

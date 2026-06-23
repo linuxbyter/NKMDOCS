@@ -7,7 +7,7 @@ import { getDocumentBySlug } from "@/data/documents";
 import { formatKES } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
 import {
-  ArrowLeft, CreditCard, Smartphone, Building2,
+  ArrowLeft, CreditCard, Smartphone,
   CheckCircle2, Shield, Loader2, AlertCircle,
 } from "lucide-react";
 
@@ -18,16 +18,15 @@ export default function CheckoutPage() {
   const doc = getDocumentBySlug(slug);
 
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
-  const [paymentMethod, setPaymentMethod] = useState<"mpesa" | "bank">("mpesa");
+  const [paymentMethod, setPaymentMethod] = useState<"mpesa">("mpesa");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-  const [reviewRequested, setReviewRequested] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const stored = sessionStorage.getItem(`nkm-answers-${slug}`);
+    const stored = sessionStorage.getItem(`ldk-answers-${slug}`);
     if (stored) {
       const parsed = JSON.parse(stored);
       setAnswers(parsed);
@@ -48,7 +47,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const totalAmount = reviewRequested ? doc.reviewPrice : doc.price;
+  const totalAmount = doc.price;
 
   const handleMpesaPayment = async () => {
     if (!phoneNumber || !customerName) {
@@ -71,15 +70,14 @@ export default function CheckoutPage() {
           answers,
           customerName,
           customerEmail,
-          reviewRequested,
+          reviewRequested: false,
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        // Store order details
-        sessionStorage.setItem("nkm-order", JSON.stringify({
+        sessionStorage.setItem("ldk-order", JSON.stringify({
           orderId: data.orderId,
           documentSlug: slug,
           documentName: doc.name,
@@ -88,65 +86,13 @@ export default function CheckoutPage() {
           customerEmail,
           phoneNumber,
           amount: totalAmount,
-          reviewRequested,
+          reviewRequested: false,
           paymentMethod: "mpesa",
           paymentReference: data.checkoutRequestId,
         }));
         router.push(`/documents/${slug}/checkout/success`);
       } else {
         setError(data.message || "Payment initiation failed. Please try again.");
-      }
-    } catch {
-      setError("Network error. Please check your connection and try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleBankPayment = async () => {
-    if (!customerName || !customerEmail) {
-      setError("Please fill in all required fields");
-      return;
-    }
-
-    setIsProcessing(true);
-    setError("");
-
-    try {
-      // Create order via API
-      const response = await fetch("/api/payment/mpesa", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber: "bank_transfer",
-          amount: totalAmount,
-          documentSlug: slug,
-          documentName: doc.name,
-          answers,
-          customerName,
-          customerEmail,
-          reviewRequested,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        sessionStorage.setItem("nkm-order", JSON.stringify({
-          orderId: data.orderId,
-          documentSlug: slug,
-          documentName: doc.name,
-          answers,
-          customerName,
-          customerEmail,
-          amount: totalAmount,
-          reviewRequested,
-          paymentMethod: "bank",
-          status: "pending_payment",
-        }));
-        router.push(`/documents/${slug}/checkout/success`);
-      } else {
-        setError(data.message || "Failed to create order. Please try again.");
       }
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -175,26 +121,6 @@ export default function CheckoutPage() {
           <div className="flex justify-between text-sm">
             <span>{doc.name}</span>
             <span className="font-medium">{formatKES(doc.price)}</span>
-          </div>
-
-          {/* Review Toggle */}
-          <div className="mt-4 pt-4 border-t border-brand-border">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={reviewRequested}
-                onChange={(e) => setReviewRequested(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-brand-border text-brand-navy focus:ring-brand-gold"
-              />
-              <div>
-                <span className="text-sm font-medium text-brand-navy">
-                  Add Advocate Review (+{formatKES(doc.reviewPrice - doc.price)})
-                </span>
-                <p className="text-xs text-brand-muted mt-0.5">
-                  An advocate will review your document before it&apos;s released
-                </p>
-              </div>
-            </label>
           </div>
 
           <div className="mt-4 pt-4 border-t border-brand-border">
@@ -239,108 +165,52 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Payment Method */}
+        {/* Payment Method - M-Pesa Only */}
         <div className="rounded-xl border border-brand-border bg-white p-6 mb-6">
-          <h2 className="font-semibold text-brand-navy mb-4">Payment Method</h2>
+          <h2 className="font-semibold text-brand-navy mb-4">Payment</h2>
 
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <button
-              onClick={() => setPaymentMethod("mpesa")}
-              className={`flex items-center justify-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-colors ${
-                paymentMethod === "mpesa"
-                  ? "border-brand-navy bg-brand-navy text-white"
-                  : "border-brand-border bg-white text-foreground hover:border-brand-navy/30"
-              }`}
-            >
+          <div className="mb-4">
+            <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-brand-navy bg-brand-navy text-white p-3 text-sm font-medium">
               <Smartphone className="h-4 w-4" />
               M-Pesa
-            </button>
-            <button
-              onClick={() => setPaymentMethod("bank")}
-              className={`flex items-center justify-center gap-2 rounded-lg border-2 p-3 text-sm font-medium transition-colors ${
-                paymentMethod === "bank"
-                  ? "border-brand-navy bg-brand-navy text-white"
-                  : "border-brand-border bg-white text-foreground hover:border-brand-navy/30"
-              }`}
-            >
-              <Building2 className="h-4 w-4" />
-              Bank Transfer
-            </button>
+            </div>
           </div>
 
-          {paymentMethod === "mpesa" && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-brand-navy mb-1">
-                  M-Pesa Phone Number <span className="text-brand-danger">*</span>
-                </label>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="e.g. 0712 345 678"
-                  className="w-full rounded-lg border border-brand-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
-                />
-                <p className="text-xs text-brand-muted mt-1">
-                  You&apos;ll receive an STK push to complete payment
-                </p>
-              </div>
-
-              <button
-                onClick={handleMpesaPayment}
-                disabled={isProcessing}
-                className="w-full rounded-lg bg-brand-gold py-3 text-sm font-semibold text-brand-navy hover:bg-brand-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4" />
-                    Pay {formatKES(totalAmount)} via M-Pesa
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {paymentMethod === "bank" && (
-            <div className="space-y-4">
-              <div className="rounded-lg bg-slate-50 p-4 text-sm">
-                <p className="font-medium text-brand-navy mb-2">Bank Transfer Details:</p>
-                <div className="space-y-1 text-brand-muted">
-                  <p>Bank: KCB Bank Kenya</p>
-                  <p>Account Name: NKM Advocates</p>
-                  <p>Account Number: 1234567890</p>
-                  <p>Branch: Westlands</p>
-                  <p className="font-medium text-brand-navy mt-2">
-                    Amount: {formatKES(totalAmount)}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={handleBankPayment}
-                disabled={isProcessing}
-                className="w-full rounded-lg bg-brand-gold py-3 text-sm font-semibold text-brand-navy hover:bg-brand-gold-light transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Creating Order...
-                  </>
-                ) : (
-                  "Confirm Bank Transfer Order"
-                )}
-              </button>
-
-              <p className="text-xs text-brand-muted text-center">
-                Your document will be generated after payment confirmation
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-brand-navy mb-1">
+                M-Pesa Phone Number <span className="text-brand-danger">*</span>
+              </label>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="e.g. 0712 345 678"
+                className="w-full rounded-lg border border-brand-border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
+              />
+              <p className="text-xs text-brand-muted mt-1">
+                You&apos;ll receive an STK push to complete payment
               </p>
             </div>
-          )}
+
+            <button
+              onClick={handleMpesaPayment}
+              disabled={isProcessing}
+              className="w-full rounded-lg bg-brand-gold py-3 text-sm font-semibold text-brand-navy hover:bg-brand-gold-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4" />
+                  Pay {formatKES(totalAmount)} via M-Pesa
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Error */}
