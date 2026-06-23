@@ -292,7 +292,14 @@ export default function ReviewPage({ slug }: { slug: string }) {
       if (!isValid) return;
       setShowSummary(true);
     } else {
-      const currentFieldIds = currentGroup?.[1].map((q) => q.id) || [];
+      // Only validate fields that are visible (not conditionally hidden)
+      const currentFieldIds = currentGroup?.[1]
+        .filter((q) => {
+          if (!q.conditionalOn) return true;
+          const depValue = allFields[q.conditionalOn.questionId];
+          return depValue === q.conditionalOn.value;
+        })
+        .map((q) => q.id) || [];
       const isValid = await trigger(currentFieldIds as any);
       if (!isValid) return;
       setCurrentGroupIndex((i) => i + 1);
