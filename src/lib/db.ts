@@ -1,10 +1,20 @@
-import { neon } from "@neondatabase/serverless";
+import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
-const sql = neon(process.env.DATABASE_URL!);
+let _sql: NeonQueryFunction<false, false> | null = null;
 
-export { sql };
+function getSql() {
+  if (!_sql) {
+    const url = process.env.DATABASE_URL;
+    if (!url) {
+      throw new Error("DATABASE_URL environment variable is not set");
+    }
+    _sql = neon(url);
+  }
+  return _sql;
+}
 
 export async function initDatabase() {
+  const sql = getSql();
   await sql`
     CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
@@ -25,13 +35,8 @@ export async function initDatabase() {
     );
   `;
 
-  await sql`
-    CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-  `;
-
-  await sql`
-    CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email);
-  `;
+  await sql`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email);`;
 }
 
 export async function createOrder(order: {
@@ -47,6 +52,7 @@ export async function createOrder(order: {
   paymentMethod?: string;
   paymentReference?: string;
 }) {
+  const sql = getSql();
   const result = await sql`
     INSERT INTO orders (
       id, document_slug, document_name, answers,
@@ -76,6 +82,7 @@ export async function updateOrderStatus(
   status: string,
   downloadUrl?: string
 ) {
+  const sql = getSql();
   const result = await sql`
     UPDATE orders
     SET status = ${status},
@@ -88,15 +95,13 @@ export async function updateOrderStatus(
 }
 
 export async function getOrderByPaymentRef(paymentRef: string) {
-  const result = await sql`
-    SELECT * FROM orders WHERE payment_reference = ${paymentRef} LIMIT 1
-  `;
+  const sql = getSql();
+  const result = await sql`SELECT * FROM orders WHERE payment_reference = ${paymentRef} LIMIT 1`;
   return result[0];
 }
 
 export async function getOrderById(orderId: string) {
-  const result = await sql`
-    SELECT * FROM orders WHERE id = ${orderId} LIMIT 1
-  `;
+  const sql = getSql();
+  const result = await sql`SELECT * FROM orders WHERE id = ${orderId} LIMIT 1`;
   return result[0];
 }

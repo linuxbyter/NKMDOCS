@@ -1,6 +1,17 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+
+function getResend() {
+  if (!_resend) {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new Error("RESEND_API_KEY environment variable is not set");
+    }
+    _resend = new Resend(apiKey);
+  }
+  return _resend;
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || "NKM Documents <noreply@documents.nkm-advocates.co.ke>";
 
@@ -29,7 +40,7 @@ export async function sendOrderConfirmation({
     ? reviewRequestedHtml({ customerName, orderId, documentName })
     : readyForDownloadHtml({ customerName, orderId, documentName, downloadUrl: downloadUrl || "" });
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM_EMAIL,
     to,
     subject,
