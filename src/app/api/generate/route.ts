@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDocumentBySlug } from "@/data/documents";
+import fs from "fs";
+import path from "path";
+import Docxtemplater from "docxtemplater";
+import PizZip from "pizzip";
 
-// Document generation API
-// In production, this would use docxtemplater or Carbone to merge answers into .docx templates
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -23,34 +25,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: In production, use docxtemplater to generate the document
-    // This is a placeholder for the actual template engine integration
-
-    /*
-    const Docxtemplater = require("docxtemplater");
-    const fs = require("fs");
-    const path = require("path");
-
-    // Load the template
     const templatePath = path.join(process.cwd(), "templates", `${slug}.docx`);
+
+    // Check if template exists on disk
+    if (!fs.existsSync(templatePath)) {
+      return NextResponse.json(
+        {
+          success: true,
+          orderId,
+          downloadUrl: `/api/download/${orderId}`,
+          message: "Template not yet available on disk. Placeholder generated.",
+          details: `Place the ${slug}.docx template in /templates/ to enable real generation.`,
+        }
+      );
+    }
+
     const content = fs.readFileSync(templatePath, "binary");
+    const zip = new PizZip(content);
+    const docx = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    });
 
-    const doc = new Docxtemplater();
-    doc.loadZip(content);
-    doc.setData(answers);
-    doc.render();
+    // Merge answers into template fields
+    docx.setData(answers);
+    docx.render();
 
-    const generatedDoc = doc.getZip().generate({ type: "nodebuffer" });
+    const generated = docx.getZip().generate({
+      type: "nodebuffer",
+      mimeType:
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    });
 
-    // Save to storage and get download URL
-    // Upload to Supabase Storage / S3
-    */
+    // Save generated document
+    const outputDir = path.join(process.cwd(), "generated");
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
 
-    // Simulated response for demo
+    const outputPath = path.join(outputDir, `${orderId}.docx`);
+    fs.writeFileSync(outputPath, generated);
+
     const downloadUrl = `/api/download/${orderId}`;
-
-    // TODO: Send email with download link
-    // Using Resend or Brevo
 
     return NextResponse.json({
       success: true,

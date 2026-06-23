@@ -96,7 +96,7 @@ export default async function DocumentPage({
               </div>
 
               <Link
-                href={`/documents/${doc.slug}/review`}
+                href={`/documents/${doc.slug}/generate`}
                 className="mt-6 block w-full rounded-lg bg-brand-gold text-center py-3 text-sm font-semibold text-brand-navy hover:bg-brand-gold-light transition-colors"
               >
                 Customize This Document
@@ -196,7 +196,7 @@ export default async function DocumentPage({
                   Answer {doc.questions.length} guided questions. Takes about {doc.estimatedTime}.
                 </p>
                 <Link
-                  href={`/documents/${doc.slug}/review`}
+                href={`/documents/${doc.slug}/generate`}
                   className="block w-full rounded-lg bg-brand-navy text-center py-3 text-sm font-semibold text-white hover:bg-brand-navy-light transition-colors"
                 >
                   Start Customizing

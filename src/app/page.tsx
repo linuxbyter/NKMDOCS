@@ -50,10 +50,10 @@ const steps = [
   },
 ];
 
-const stats = [
-  { label: "Documents Created", value: "60+" },
-  { label: "Returning Users", value: "200+" },
-  { label: "Avg. Processing Time", value: "< 2 min" },
+const trustSignals = [
+  { icon: FileText, label: "Advocate-drafted templates", desc: "Every template is prepared and vetted by a qualified advocate." },
+  { icon: Clock, label: "Instant M-Pesa delivery", desc: "Pay via M-Pesa and receive your document by email immediately." },
+  { icon: Users, label: "Customized to your answers", desc: "Fill in the blanks — your document is built around your details." },
 ];
 
 export default function HomePage() {
@@ -82,14 +82,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
+      {/* Trust Signals */}
       <section className="bg-brand-navy-light border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-3 gap-8 text-center">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <div className="text-2xl sm:text-3xl font-bold text-brand-gold">{stat.value}</div>
-                <div className="text-sm text-slate-400">{stat.label}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {trustSignals.map((s) => (
+              <div key={s.label} className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-gold/20">
+                  <s.icon className="h-5 w-5 text-brand-gold" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-white">{s.label}</div>
+                  <div className="text-xs text-slate-400">{s.desc}</div>
+                </div>
               </div>
             ))}
           </div>

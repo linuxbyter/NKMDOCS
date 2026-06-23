@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { getDocumentBySlug } from "@/data/documents";
 import { formatKES } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
 import {
   ArrowLeft, CreditCard, Smartphone,
-  CheckCircle2, Shield, Loader2, AlertCircle,
+  Shield, Loader2, AlertCircle,
 } from "lucide-react";
 
-export default function CheckoutPage() {
-  const params = useParams();
+function CheckoutContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const slug = params.slug as string;
+  const slug = searchParams.get("doc") || "";
   const doc = getDocumentBySlug(slug);
 
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/payment/mpesa", {
+      const response = await fetch("/api/mpesa/stkpush", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -90,7 +90,7 @@ export default function CheckoutPage() {
           paymentMethod: "mpesa",
           paymentReference: data.checkoutRequestId,
         }));
-        router.push(`/documents/${slug}/checkout/success`);
+        router.push(`/checkout/status/${data.orderId}`);
       } else {
         setError(data.message || "Payment initiation failed. Please try again.");
       }
@@ -106,7 +106,7 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
         {/* Back Link */}
         <Link
-          href={`/documents/${slug}/review`}
+          href={`/documents/${slug}/generate`}
           className="inline-flex items-center gap-1 text-sm text-brand-muted hover:text-brand-navy mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -232,5 +232,17 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-brand-muted" />
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

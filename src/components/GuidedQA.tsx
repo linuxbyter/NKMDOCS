@@ -303,7 +303,7 @@ export default function ReviewPage({ slug }: { slug: string }) {
   const goToCheckout = () => {
     const answers = watch();
     sessionStorage.setItem(`ldk-answers-${slug}`, JSON.stringify(answers));
-    router.push(`/documents/${slug}/checkout`);
+    router.push(`/checkout?doc=${slug}`);
   };
 
   const progress = ((currentGroupIndex + 1) / groups.length) * 100;

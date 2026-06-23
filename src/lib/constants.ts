@@ -10,7 +10,8 @@ export const BRAND = {
 
 export const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
-  { href: "/#catalogue", label: "Documents" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#pricing", label: "Pricing" },
+  { href: "/documents", label: "Templates" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/faq", label: "FAQ" },
 ] as const;

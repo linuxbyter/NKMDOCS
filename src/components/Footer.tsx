@@ -22,11 +22,11 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">
-              Documents
+              Templates
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/#catalogue" className="text-slate-300 hover:text-white">
+                <Link href="/documents" className="text-slate-300 hover:text-white">
                   Browse All
                 </Link>
               </li>
@@ -45,27 +45,47 @@ export function Footer() {
                   NDA
                 </Link>
               </li>
+              <li>
+                <Link href="/pricing" className="text-slate-300 hover:text-white">
+                  Pricing
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">
-              Support
+              Resources
             </h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:support@legaldocske.vercel.app" className="text-slate-300 hover:text-white">
-                  Email Support
-                </a>
+                <Link href="/how-it-works" className="text-slate-300 hover:text-white">
+                  How It Works
+                </Link>
               </li>
               <li>
-                <Link href="#" className="text-slate-300 hover:text-white">
+                <Link href="/faq" className="text-slate-300 hover:text-white">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/#how-it-works" className="text-slate-300 hover:text-white">
-                  How It Works
+                <a href="mailto:support@legaldocske.vercel.app" className="text-slate-300 hover:text-white">
+                  Contact
+                </a>
+              </li>
+              <li>
+                <Link href="/legal/privacy" className="text-slate-300 hover:text-white">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/terms" className="text-slate-300 hover:text-white">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/disclaimer" className="text-slate-300 hover:text-white">
+                  Disclaimer
                 </Link>
               </li>
             </ul>

@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       PartyA: phone,
       PartyB: MPESA_CONFIG.shortCode,
       PhoneNumber: phone,
-      CallBackURL: `${MPESA_CONFIG.callbackUrl}/api/payment/mpesa/callback`,
+      CallBackURL: `${MPESA_CONFIG.callbackUrl}/api/mpesa/callback`,
       AccountReference: orderId,
       TransactionDesc: `Payment for ${documentName} - Order ${orderId}`,
     };
