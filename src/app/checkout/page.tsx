@@ -8,8 +8,15 @@ import { formatKES } from "@/lib/utils";
 import { BRAND } from "@/lib/constants";
 import {
   ArrowLeft, CreditCard, Smartphone,
-  Shield, Loader2, AlertCircle,
+  Shield, Loader2, AlertCircle, Mic,
 } from "lucide-react";
+
+const TONE_OPTIONS = [
+  { value: "formal", label: "Formal (Standard legal language)" },
+  { value: "simple", label: "Simple (Plain language, easy to understand)" },
+  { value: "firm", label: "Firm (Strong, assertive tone)" },
+  { value: "casual", label: "Casual (Friendly but professional)" },
+];
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -22,6 +29,7 @@ function CheckoutContent() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [tone, setTone] = useState("formal");
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
 
@@ -50,7 +58,7 @@ function CheckoutContent() {
   const totalAmount = doc.price;
 
   const handleMpesaPayment = async () => {
-    if (!phoneNumber || !customerName) {
+    if (!phoneNumber || !customerName || !customerEmail) {
       setError("Please fill in all required fields");
       return;
     }
@@ -70,6 +78,7 @@ function CheckoutContent() {
           answers,
           customerName,
           customerEmail,
+          tone,
           reviewRequested: false,
         }),
       });
@@ -86,6 +95,7 @@ function CheckoutContent() {
           customerEmail,
           phoneNumber,
           amount: totalAmount,
+          tone,
           reviewRequested: false,
           paymentMethod: "mpesa",
           paymentReference: data.checkoutRequestId,
@@ -104,7 +114,6 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8">
-        {/* Back Link */}
         <Link
           href={`/documents/${slug}/generate`}
           className="inline-flex items-center gap-1 text-sm text-brand-muted hover:text-brand-navy mb-6"
@@ -128,6 +137,39 @@ function CheckoutContent() {
               <span>Total</span>
               <span className="text-brand-navy text-lg">{formatKES(totalAmount)}</span>
             </div>
+          </div>
+        </div>
+
+        {/* Tone Selection */}
+        <div className="rounded-xl border border-brand-border bg-white p-6 mb-6">
+          <h2 className="font-semibold text-brand-navy mb-4 flex items-center gap-2">
+            <Mic className="h-4 w-4 text-brand-gold" />
+            Document Tone
+          </h2>
+          <p className="text-sm text-brand-muted mb-4">
+            Choose the tone and style of your document. This affects how the content reads.
+          </p>
+          <div className="space-y-2">
+            {TONE_OPTIONS.map((opt) => (
+              <label
+                key={opt.value}
+                className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                  tone === opt.value
+                    ? "border-brand-gold bg-brand-gold/5"
+                    : "border-brand-border hover:border-brand-muted"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="tone"
+                  value={opt.value}
+                  checked={tone === opt.value}
+                  onChange={(e) => setTone(e.target.value)}
+                  className="accent-brand-gold"
+                />
+                <span className="text-sm text-brand-navy">{opt.label}</span>
+              </label>
+            ))}
           </div>
         </div>
 

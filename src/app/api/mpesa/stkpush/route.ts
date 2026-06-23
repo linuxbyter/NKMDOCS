@@ -3,7 +3,6 @@ import { createOrder, updateOrderStatus } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/email";
 import { generateOrderId } from "@/lib/utils";
 
-// M-Pesa Daraja API Configuration
 const MPESA_CONFIG = {
   consumerKey: process.env.MPESA_CONSUMER_KEY || "",
   consumerSecret: process.env.MPESA_CONSUMER_SECRET || "",
@@ -49,10 +48,23 @@ function generatePassword(timestamp: string): string {
   return Buffer.from(data).toString("base64");
 }
 
+async function triggerDocumentGeneration(slug: string, answers: Record<string, unknown>, orderId: string, tone: string) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  try {
+    await fetch(`${appUrl}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, answers, orderId, tone }),
+    });
+  } catch (err) {
+    console.error("Document generation trigger failed:", err);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phoneNumber, amount, documentSlug, documentName, customerName, customerEmail, reviewRequested } = body;
+    const { phoneNumber, amount, documentSlug, documentName, customerName, customerEmail, tone, reviewRequested } = body;
 
     if (!phoneNumber || !amount || !documentSlug || !customerName || !customerEmail) {
       return NextResponse.json(
@@ -62,6 +74,8 @@ export async function POST(request: NextRequest) {
     }
 
     const orderId = generateOrderId();
+    const answers = body.answers || {};
+    const selectedTone = tone || "formal";
 
     // Format phone number
     const formattedPhone = phoneNumber.replace(/[^0-9]/g, "");
@@ -72,11 +86,11 @@ export async function POST(request: NextRequest) {
       : `254${formattedPhone}`;
 
     // Save order to Neon
-    const order = await createOrder({
+    await createOrder({
       id: orderId,
       documentSlug,
       documentName,
-      answers: body.answers || {},
+      answers,
       customerName,
       customerEmail,
       customerPhone: phoneNumber,
@@ -85,28 +99,30 @@ export async function POST(request: NextRequest) {
       paymentMethod: "mpesa",
     });
 
-    // Sandbox mode - simulate payment (when shortCode/passkey not configured)
+    // Sandbox mode - simulate payment
     if (MPESA_CONFIG.environment === "sandbox" && (!MPESA_CONFIG.shortCode || !MPESA_CONFIG.passkey)) {
       const simulatedRequestId = `ws_CO_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-      // Update order status
       await updateOrderStatus(orderId, "paid");
 
-      // Send confirmation email
-      await sendOrderConfirmation({
+      // Generate document via AI
+      await triggerDocumentGeneration(documentSlug, answers, orderId, selectedTone);
+
+      // Send confirmation email (non-blocking)
+      sendOrderConfirmation({
         to: customerEmail,
         customerName,
         orderId,
         documentName,
         downloadUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/download/${orderId}`,
         reviewRequested: reviewRequested || false,
-      });
+      }).catch((err) => console.error("Failed to send confirmation email:", err));
 
       return NextResponse.json({
         success: true,
         orderId,
         checkoutRequestId: simulatedRequestId,
-        message: "Payment confirmed (sandbox mode). Confirmation email sent.",
+        message: "Payment confirmed (sandbox mode). Document is being generated.",
       });
     }
 
@@ -141,8 +157,10 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (data.ResponseCode === "0") {
-      // Update order with payment reference
       await updateOrderStatus(orderId, "paid", undefined);
+
+      // Generate document via AI
+      await triggerDocumentGeneration(documentSlug, answers, orderId, selectedTone);
 
       return NextResponse.json({
         success: true,
@@ -165,3 +183,5 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+

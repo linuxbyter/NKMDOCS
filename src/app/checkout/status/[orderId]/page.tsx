@@ -72,12 +72,12 @@ export default function StatusPage() {
               ? "Payment Received!"
               : "Processing Your Payment..."}
           </h1>
-          <p className="text-brand-muted mt-2 max-w-md mx-auto">
+            <p className="text-brand-muted mt-2 max-w-md mx-auto">
             {status === "paid" || status === "ready" || status === "delivered"
-              ? "Your document is being generated and will be emailed to you shortly."
+              ? "Your document is ready! Check your email or download below."
               : polling
               ? "Waiting for payment confirmation from M-Pesa..."
-              : "Your document is ready."}
+              : "Processing your document..."}
           </p>
         </div>
 
