@@ -51,8 +51,8 @@ const steps = [
 ];
 
 const stats = [
-  { label: "Documents Created", value: "500+" },
-  { label: "Active Users", value: "300+" },
+  { label: "Documents Created", value: "60+" },
+  { label: "Returning Users", value: "200+" },
   { label: "Avg. Processing Time", value: "< 2 min" },
 ];
 

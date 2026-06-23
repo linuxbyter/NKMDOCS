@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOrder, updateOrderStatus } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/email";
-import { getDocumentBySlug } from "@/data/documents";
 import { generateOrderId } from "@/lib/utils";
 
 // M-Pesa Daraja API Configuration
@@ -86,8 +85,8 @@ export async function POST(request: NextRequest) {
       paymentMethod: "mpesa",
     });
 
-    // Sandbox mode - simulate payment
-    if (MPESA_CONFIG.environment === "sandbox" && !MPESA_CONFIG.consumerKey) {
+    // Sandbox mode - simulate payment (when shortCode/passkey not configured)
+    if (MPESA_CONFIG.environment === "sandbox" && (!MPESA_CONFIG.shortCode || !MPESA_CONFIG.passkey)) {
       const simulatedRequestId = `ws_CO_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
       // Update order status

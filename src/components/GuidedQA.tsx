@@ -258,8 +258,8 @@ export default function ReviewPage({ slug }: { slug: string }) {
   const {
     register,
     watch,
-    handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -277,10 +277,24 @@ export default function ReviewPage({ slug }: { slug: string }) {
     );
   }
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
+    const allFields = watch();
+
     if (isLastGroup) {
+      const visibleFieldIds = doc.questions
+        .filter((q) => {
+          if (!q.conditionalOn) return true;
+          const depValue = allFields[q.conditionalOn.questionId];
+          return depValue === q.conditionalOn.value;
+        })
+        .map((q) => q.id);
+      const isValid = await trigger(visibleFieldIds as any);
+      if (!isValid) return;
       setShowSummary(true);
     } else {
+      const currentFieldIds = currentGroup?.[1].map((q) => q.id) || [];
+      const isValid = await trigger(currentFieldIds as any);
+      if (!isValid) return;
       setCurrentGroupIndex((i) => i + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -372,13 +386,9 @@ export default function ReviewPage({ slug }: { slug: string }) {
                   <span>{doc.name}</span>
                   <span className="font-medium">{formatKES(doc.price)}</span>
                 </div>
-                <div className="flex justify-between text-brand-muted">
-                  <span>Optional: Advocate Review</span>
-                  <span>+{formatKES(doc.reviewPrice - doc.price)}</span>
-                </div>
                 <div className="border-t border-brand-border pt-2 mt-2">
                   <div className="flex justify-between font-semibold">
-                    <span>Document Only</span>
+                    <span>Total</span>
                     <span className="text-brand-navy">{formatKES(doc.price)}</span>
                   </div>
                 </div>
@@ -413,7 +423,7 @@ export default function ReviewPage({ slug }: { slug: string }) {
           </div>
         ) : (
           /* Question Form */
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
             <div className="mb-8">
               <h2 className="text-xl font-bold text-brand-navy">{currentGroup?.[0]}</h2>
               <p className="text-sm text-brand-muted mt-1">
