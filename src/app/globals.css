@@ -26,8 +26,8 @@
   --color-brand-danger: var(--brand-danger);
   --color-brand-muted: var(--brand-muted);
   --color-brand-border: var(--brand-border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 body {
